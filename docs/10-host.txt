@@ -1,0 +1,10 @@
+
+Create a policy rule that lets stoth issue sudoless virsh commands
+to adminster KVM.
+
+$ sudo groupadd libvirt
+$ sudo usermod -a -G libvirt stoth
+$ sudo cp host/etc/polkit-1/rules.d/80-libvirt.rules /etc/polkit-1/rules.d
+
+Logout and back in as stoth
+

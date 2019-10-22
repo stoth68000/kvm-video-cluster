@@ -1,0 +1,118 @@
+
+This project will establish procedures for creating VMs and installing
+various video centric clustering technologies into them.
+
+In summary, we will:
+
+STAGE 1
+*******
+
+* Install KVM on a 'host system' with 24 cores and 48 GB of RAM.
+  Notes required.
+  Physical host 192.168.2.161
+
+* Create a KVM centos7.6 'base image', a minimal install VM.
+  See create-base-vm.sh
+  root user password is root.
+  Minimal Centos7.6 install.
+  No networks configured.
+  No additional user accounts.
+  A vanilla Centos installation, 20GB Disk, 2GB RAM, 2 CPU.
+
+* Create scripts to quickly clone and provision 'base image' to create new developments VMs.
+  Accelerate the deployment of new images, for future uses.
+  See clone-base-vm.sh.
+
+* Create a general script to 'configure VM as a development VM', installing developer
+  and video centric tools. See vm-install.sh
+  This script is so generic that the clone-base.sh script will seed this into the /root dir
+  for all cloned VMs.
+
+* We'll use the cloning script to establish a virtual storage server, able to share files between
+  any number of local nodes, using NFS. Good enough for R&D purposes.
+
+  IP            Hostname(s)       Description
+  192.168.2.167 vc167 storagesrv  NFS server, provides /clusterfs filesystem to nodes.
+  (See 30-storagesrv-install.txt)
+
+* We'll use the cloning script to establish a virtual docker registry, containing future
+  docker container images and serving them to kubernetes or any other docker based platform.
+
+  IP            Hostname(s)       Description
+  192.168.2.168 vc168 dockersrv   Private Docker registry
+                docker-registry
+                docker-registry.example.com
+  (See 31-dockersrv-install.txt)
+  The registry will operate in an insecure mode, good enough for R&D testing only.
+  Harden the registry and authenticate with TLS required.
+
+* We'll use the cloning script to create five virtual machines, these will eventually support the
+  Kubernetes application. In the meantime, lets just provision them as servers.
+
+  IP            Hostname(s) Eventual Usage
+  192.168.2.162 vc162 k0    Kubernetes master
+  192.168.2.163 vc163 k1    Kubernetes worker
+  192.168.2.164 vc164 k2    Kubernetes worker
+  192.168.2.165 vc165 k3    Kubernetes worker
+  192.168.2.166 vc166 k4    Kubernetes worker
+
+  On these VMs we will:
+
+  Install any developer tools depepdencies (See vm-install.txt)
+  Mount the /clusterfs shared storage (See storagesrv-mount.sh)
+  Add our private docker registry to a list of valid container sources.
+  This allows us to build custom video centric containers and have kubernetes
+  download and instantiate these as required.
+  (See docker-registry-install.sh) 
+
+* We'll have KVM autostart all of these VMs when the 'host system', boots.
+
+STAGE 2
+*******
+
+* We'll create a script to install and configure the kubernetes software
+  on vc162/k0. (See cluster-master-install.sh).
+  The script will adjust the platform firewall rules, install any software,
+  initialize kubernetes stack.
+
+* We'll create a script that installs any kubernetes worker node software
+  dependencies on k1-4/vc163-66. The script will join 'each worker' to the kubernetes
+  cluster and bring itself online, ready to run any kubernetes task.
+  (See cluster-worker-install.sh)
+
+* We'll create a admin-user in the cluster, required when we install the
+  kubernetes dashboard web-ui for primitive monitoring.
+  (See dashboard/create-dashboard-admin-user.sh)
+
+* We'll deploy dashboard into the kubernetes cluster, so we can visually see
+  what tasks the cluster is processing.
+  (See dashboard/deploy-dashboard.sh)
+
+* We'll manually run the kubernetes web proxy, in order to access the dashboard
+  From outside the cluster (on desktop machines).
+  (See run-dashboard.sh)
+
+* Desktop user will create a ssh tunnel on their mac, in order to access
+  the kubernetes dashboard,
+  ssh -L 38001:127.0.0.1:8001 root@192.168.2.162
+
+  Dashboard is now be available via this url:
+  http://127.0.0.1:38001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
+
+STAGE 3
+*******
+
+* We'll create a fully versioned container, containing the flowclient (receive mode only).
+  The container will live in the customer private docker registry.
+  It will receive a linear channel 7x24 into the cluster. The container will be able to
+  receive any 'handler' channel, and output it to a user specified multicast address.
+
+* We'll be able to manually inspect the runtime and logs for the flow client.
+
+* We'll be able to modify and enhance the flow client container, reversion it and push
+  new versions out into the cluster.
+
+* We'll be able to take a cluster worker offline, observe the flow client task being
+  migrated to another worker.
+
+

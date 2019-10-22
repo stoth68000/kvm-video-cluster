@@ -1,0 +1,36 @@
+References:
+  https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui
+  https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
+  https://github.com/kubernetes/dashboard/issues/3689
+
+On master, deploy the dashboard application.
+
+# kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta4/aio/deploy/recommended.yaml
+
+Obtain a Bearer Token, which can be used to login:
+Now we need to find token we can use to log in. Execute following command:
+
+kvm-video-cluster/dashboard/create-dashboard-admin-user.sh
+
+The admin-user will be created and given an access token, displayed on the screen. Use this to sign-in
+to the dashboard application below.
+
+On the master, start the web proxy (use screen to background it):
+# kubectl proxy
+Starting to serve on 127.0.0.1:8001
+
+Don't try to use the promiscious modes in proxy. While you'll see a login page
+for the dashboard, when you click 'signon' nothing will happen.
+
+vvvvv DON'T USE THIS
+# kubectl proxy --address 0.0.0.0 --accept-hosts '.*'
+
+Now we need to access the dashboard from outside of 192.168.2.162
+Setup a ssh tunnel to access it, on your mac:
+ssh -L 38001:127.0.0.1:8001 root@192.168.2.162
+
+Dashboard is now be available via this url:
+http://127.0.0.1:38001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
+
+Login using the token we queried above, during user creation.
+

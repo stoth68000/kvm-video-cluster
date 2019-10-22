@@ -1,0 +1,38 @@
+
+Create a virtual system and nominate it the private docker
+registery server for the entire network. We'll clone the base image, install
+some dependencies.
+
+The system will have the following details, IP and two host names:
+192.168.2.168 vc168 dockersrv
+
+You'll see this reflected in host files all over the cluster.
+
+From the scripts dir, on 192.168.2.161, create a new virtual machine
+configuration.
+
+# cd scripts
+cat <<EOF >vc168.cfg
+NEW_HOSTNAME=vc168
+NEW_IPADDR=192.168.2.168
+EOF
+
+Create the new virtual machine from that new configuration.
+# ./clone-base-vm.sh vc168.cfg
+
+Start the new virtual machine
+# sudo virsh start vc168
+
+ssh into the dockersrv, install any dep scripts, then run them
+to configure the base image as a nfs server.
+
+vc161 # scp scripts/storagesrv-mount.sh root@192.168.2.168:~
+vc161 # scp scripts/dockersrv-install.sh root@192.168.2.168:~
+
+vc168# cd ~
+vc168# ./vm-install.sh
+vc168# ./storagesrv-mount.sh
+vc168# ./dockersrv-install.sh
+
+End.
+

@@ -1,0 +1,27 @@
+
+Create the base virtual machine image.
+This image will have no networking, no additional packages,
+no additional user accounts - a clean base image.
+2GB RAM, 20GB disk, 2 cpus, VNC port defaults to 5900.
+KVM image name will be: centos7-1810-minimal-base
+
+We'll clone this and adjust for any new virtual machines we need on this platform.
+
+$ sudo create-base-vm.sh
+
+Connect to port 192.168.2.161:5900 with a VNC viewer and run the install.
+
+Leave everything else as default:
+English United States
+Accept Automatic Partitioning.
+Don't configure the network.
+Minimal Install.
+
+Set the root password as root.
+
+Don't create a user account.
+
+Install takes 5 mins.
+
+Reboot when asked, login as root, init 6.
+

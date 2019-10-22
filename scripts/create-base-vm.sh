@@ -9,5 +9,5 @@ virt-install \
 --cdrom=/var/lib/libvirt/boot/CentOS-7-x86_64-Minimal-1810.iso \
 --network=bridge=br0,model=virtio \
 --graphics vnc,listen=0.0.0.0,port=5900 \
---disk path=/var/lib/libvirt/images/centos7-vm0.qcow2,size=20,bus=virtio,format=qcow2
+--disk path=/var/lib/libvirt/images/centos7-1810-minimal-base.qcow2,size=20,bus=virtio,format=qcow2
 

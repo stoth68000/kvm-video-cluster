@@ -1,0 +1,9 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+192.168.2.162 vc162 k0
+192.168.2.163 vc163 k1
+192.168.2.164 vc164 k2
+192.168.2.165 vc165 k3
+192.168.2.166 vc166 k4
+192.168.2.167 vc167 storagesrv
+192.168.2.168 vc168 dockersrv docker-registry.example.com docker-registry

@@ -1,0 +1,59 @@
+
+Create the first virtual system and nominate it the storage
+server for the entire cluster. We'll clone the base image, install
+some dependencies, use a network storage protocol
+to service the future cluster and make that storage available
+on the network.
+
+We'll use this to quickly share development / git scripts and
+processes, long before we stand up kubernetes.
+
+Kubernetes supports 20+ different storage protocols, for simplicity
+we'll start with NFS as our storage protocol. We'll replace the
+storage protocol as/when we explore kubernetes in greater detail.
+
+The system will have the following details, IP and two host names:
+192.168.2.167 vc167 storagesrv
+
+You'll see this reflected in host files all over the cluster.
+
+From the scripts dir, on 192.168.2.161, create a new virtual machine
+configuration.
+
+# cd scripts
+cat <<EOF >vc167.cfg
+NEW_HOSTNAME=vc167
+NEW_IPADDR=192.168.2.167
+EOF
+
+Create the new virtual machine from that new configuration.
+# ./clone-base-vm.sh vc167.cfg
+
+Start the new virtual machine
+# sudo virsh start vc167
+
+ssh into the storagesrv, install any dep scripts, then run them
+to configure the base image as a nfs server.
+
+vc161 # scp scripts/storagesrv-install.sh root@192.168.2.167:~
+
+vc167# cd ~
+vc167# ./vm-install.sh
+vc167# ./storagesrv-install.sh
+
+Now the /clusterfs dir will be exported to anyone in 192.168.2.x.
+You can optionally mount this from ANY OTHER system.
+
+othernode# mount -t nfs 192.168.2.167:/clusterfs /clusterfs
+
+We recommend that /clusterfs is available on all virtual machines
+in the cluster.
+
+Lastly, in /clusterfs, git pull the latest kvm-video-cluster repo.
+
+vc167# cd /clusterfs
+vc167# git clone https://github.com/stoth68000/kvm-video-cluster.git
+
+End.
+
+

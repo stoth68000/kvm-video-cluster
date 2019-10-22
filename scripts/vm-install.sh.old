@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# Phase 1
+# Run a centos 7 minimal install.
+# Adjust the bios to boot from UEFI centos by default
+# Then the following.
+
+# Configure the network with a static IP on eno1
+# 192.168.2.x, then:
+sudo yum -y update
+sudo yum -y groupinstall "Development Tools"
+sudo yum -y install mesa-libGL-17.2.3-8.20171019.el7
+sudo yum -y install epel-release
+sudo yum repolist
+sudo yum -y install dkms
+sudo yum -y install kernel-devel
+sudo yum -y install mlocate
+sudo yum -y install screen
+sudo yum -y install net-tools
+sudo yum -y install valgrind
+sudo yum -y install mediainfo
+sudo yum -y install sysstat
+sudo yum -y install tcpdump
+sudo yum -y install json-c
+sudo yum -y install wget
+sudo yum -y install nfs-utils parallel
+sudo updatedb
+
+# For VMAF deps
+sudo yum -y install gcc gcc-c++ gcc-gfortran freetype hdf5 git python2-tkinter python-numpy python-scipy python-matplotlib python-notebook python-pandas python-sympy python-nose python-scikit-learn python-scikit-image python-h5py
+sudo yum -y install h5py
+sudo yum -y install python2-scikit-image scikit-image-tools
+rpm -i https://harbottle.gitlab.io/epypel/7/x86_64/epypel-release-7-2.el7.harbottle.x86_64.rpm
+sudo yum -y install python-scikit-learn
+#sudo yum install python34 python34-pip
+
+
+sudo systemctl enable sysstat
+sudo systemctl start sysstat
+
+# Assuming networking is configured for 192.168.2.90 then
+sudo hostnamectl set-hostname node171
+
+sudo systemctl disable firewalld
+sudo systemctl stop firewalld
+#sudo route add -net 224.0.0.0 netmask 240.0.0.0 eno1
+#sudo /sbin/sysctl -w net.ipv4.conf.all.rp_filter=0
+
+ssh-keygen
+
+scp 192.168.2.58:~/.ssh/id_rsa.pub .ssh/authorized_keys
+chmod 600 .ssh/authorized_keys
+
+
