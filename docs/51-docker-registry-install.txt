@@ -1,0 +1,13 @@
+References:
+  https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui
+  https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
+  https://github.com/kubernetes/dashboard/issues/3689
+
+Each kubernetes master and worker, and possible any other relevant systems, they need
+to be able to obtain private docker images from our own docker registry.
+
+On each system, vc162 through vc166 (and any others you choose), run the script to
+configure the local docker instances and install the private cert.
+
+See docker-registry-install.sh
+
